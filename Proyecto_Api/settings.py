@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ydy+8zw%6&*y^)hc&czl4a^_uwt1wyc*%9c0ulmw_$6$jmuk1='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'Proyecto_Api.urls'
@@ -75,20 +76,14 @@ WSGI_APPLICATION = 'Proyecto_Api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+import dj_database_url from decouple import config
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'bp5eb3adpfuirt7wn88u-mysql.services.clever-cloud.com',
-        'PORT': '3306',
-        'USER': 'u53ctd8ccai3ypwu',
-        'PASSWORD': 'xqBzJ5pRgSxm8Dd5Foo6',
-        'NAME': 'bp5eb3adpfuirt7wn88u',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
-        
-    }
+    'default': dj_database_url.config(
+        default=config('mysql://u53ctd8ccai3ypwu:xqBzJ5pRgSxm8Dd5Foo6@bp5eb3adpfuirt7wn88u-mysql.services.clever-cloud.com:3306/bp5eb3adpfuirt7wn88u')
+    )
 }
+    
 
 
 # Password validation
@@ -126,10 +121,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
